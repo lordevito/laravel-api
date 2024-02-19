@@ -9,7 +9,14 @@ use Illuminate\Http\Request;
 class ProjectController extends Controller
 {
     public function index(){
+        request()->validate([
+            'key' => ['nullable', 'string', 'min:5']
+        ]);
+        if (request()->key){
+            $projects = Project::where('title', 'LIKE', '%' . request()->key . '%')->orWhere('description', 'LIKE', '%' . request()->key . '%')->paginate(10);
+        } else{
         $projects = Project::paginate(10);
+        }
         return response()->json([
             'status' => 'success',
             'data' => $projects
